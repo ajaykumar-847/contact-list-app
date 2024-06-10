@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts</title>
+    <!-- import tailwindcss from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100">
+    <!-- Header with title and user name and logout button -->
+    <div class="flex justify-between items-center mb-10 py-2 ml-8 mr-8 border-b-4 border-black">
+        <h1 class="text-4xl font-bold">CONTACT LIST APP</h1>
+        <div class="flex items-center space-x-4">
+            <h1 class="text-2xl  font-medium">{{.Username}}</h1> 
+            <a href="/logout" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</a>
+        </div>
+    </div>
+    
+    <div class="flex justify space-x-10 mr-8">
+        <!-- Add Contact form -->
+        <div class="w-full max-w-md rounded-2xl bg-white px-5 py-2 ml-8 shadow-lg">
+            <h2 class="text-2xl font-bold text-center">Add Contact</h2>
+            <form id="add-contact" method="POST" action="/contacts" class="space-y-1">
+                <div style="margin-top: 1rem;">
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name:</label>
+                    <input type="text" id="name" name="name" class="mt-1 p-1 w-full border rounded-md">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
+                    <input type="email" id="email" name="email" class="mt-1 p-1 w-full border rounded-md">
+                </div>
+                <div>
+                    <label for="phone_number" class="block text-sm font-medium text-gray-700">Phone Number:</label>
+                    <input type="text" id="phone_number" name="phone_number" class="mt-1 p-1 w-full border rounded-md">
+                </div>
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">Address:</label>
+                    <input type="text" id="address" name="address" class="mt-1 p-1 w-full border rounded-md">
+                </div>
+                <div>
+                    <label for="company_name" class="block text-sm font-medium text-gray-700">Company Name:</label>
+                    <input type="text" id="company_name" name="company_name" class="mt-1 p-1 w-full border rounded-md">
+                </div>
+                <input type="submit" value="Add Contact" style="margin-top: 1rem;" class=" max-w-md py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+            </form>
+        </div>
+
+        <!-- Search Contacts form -->
+        <div class=" w-full max-w-full max-h-36 rounded-2xl bg-white px-5 py-2 shadow-lg">
+            <h2 class="text-2xl font-bold text-center">Search Contacts</h2>
+            <form method="GET" action="/contacts">
+                <div>
+                    <input type="text" name="query" placeholder="Search by name or email" class="mt-1 p-1 w-full border rounded-md">
+                    <input type="submit" value="Search" value="Add Contact" style="margin-top: 1rem;" class=" max-w-md py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Contact form will be initially hidden -->
+    <div id="edit_form" style="display: none;" class="mt-5 w-full max-w-md rounded-2xl bg-white px-5 py-2 ml-8 shadow-lg">
+        <h2 class="text-2xl font-bold text-center">Edit Contact</h2>
+        <form method="POST" action="/editContact" class="space-y-1">
+            <div>
+                <!-- <input type="hidden" id="edit_name" name="oldName" > -->
+                 <!-- Hidden input to store old name for reference for updating database-->
+                <input type="hidden" id="edit_name" name="oldName">
+                <label for="name" class="block text-sm font-medium text-gray-700">Name:</label>
+                <input type="text" id="edit_name_new" name="name" class="mt-1 p-1 w-full border rounded-md">
+            </div>
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
+                <input type="email" id="edit_email" name="email" class="mt-1 p-1 w-full border rounded-md">
+            </div>
+            <div>
+                <label for="phone_number" class="block text-sm font-medium text-gray-700">Phone Number:</label>
+                <input type="text" id="edit_phone_number" name="phone_number" class="mt-1 p-1 w-full border rounded-md">
+            </div>
+            <div>
+                <label for="address" class="block text-sm font-medium text-gray-700">Address:</label>
+                <input type="text" id="edit_address" name="address" class="mt-1 p-1 w-full border rounded-md">
+            </div>
+            <div>
+                <label for="company_name" class="block text-sm font-medium text-gray-700">Company Name:</label>
+                <input type="text" id="edit_company_name" name="company_name" class="mt-1 p-1 w-full border rounded-md">
+            </div>
+            <input type="hidden" name="username" value="{{.Username}}">
+            <input type="submit" value="Save" style="margin-top: 1rem;" class="max-w-md py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+        </form>
+    </div>
+
+    <!-- Display the list of contacts -->
+    <h2 class="text-2xl font-bold text-center mb-5 mt-5">LIST OF CONTACTS</h2>
+    <div class="ml-8 mr-8 mb-24">
+        <table class="w-full divide-y divide-gray-200  px-5">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="border-b-4 px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="border-b-4 px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th class="border-b-4 px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
+                    <th class="border-b-4 px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                    <th class="border-b-4 px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Name</th>
+                    <th class="border-b-4 px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {{range .Contacts}}
+                <tr>
+                    <td class="px-4 py-4 whitespace-nowrap">{{.name}}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">{{.email}}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">{{.phone_number}}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">{{.address}}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">{{.company_name}}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" onclick="editContact('{{.name}}', '{{.email}}', '{{.phone_number}}', '{{.address}}', '{{.company_name}}')">Edit</button>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2" onclick="deleteContactRedirect('{{.name}}')">Delete</button>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Include external JavaScript file -->
+    <script src="/static/js/scripts.js"></script>
+    <script>
+        // Redirect function to handle contact deletion with username parameter
+        function deleteContactRedirect(name) {
+            deleteContact(name, '{{.Username}}');
+        }
+    </script>     
+</body>
+</html>
