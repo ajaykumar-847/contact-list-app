@@ -22,7 +22,7 @@ var (
 )
 
 // initializes the database connection for usersdb database and contactdb database
-func initDB() {
+func initDB() {	
 	var err error
 	// initialize userdb database connection
 	userDB, err = sql.Open("postgres", fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
