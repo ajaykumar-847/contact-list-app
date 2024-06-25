@@ -1,14 +1,17 @@
-FROM golang:1.22.4 as builder
+FROM golang:1.22.4 AS builder
+
+COPY go.mod /app/
+COPY go.sum /app/
+COPY main.go /app/
+COPY README.md /app/
+COPY .env /app/
+COPY static /app/static/
+COPY templates /app/templates/
+
 WORKDIR /app
-COPY go.mod go.sum ./
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN go mod download
-COPY . .
-RUN go build -o main .
-FROM debian:bookworm-slim
-WORKDIR /root/
-COPY --from=builder /app/main .
-COPY --from=builder /app/templates ./templates
-COPY --from=builder /app/static ./static
-COPY --from=builder /app/.env .
+
 EXPOSE 8000
-CMD ["./main"]
+
+CMD ["go", "run", "main.go"]
